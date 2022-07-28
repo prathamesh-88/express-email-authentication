@@ -1,0 +1,9 @@
+node_modules
+.git
+.vscode
+.env.dev
+access.logs
+
+// Package manager files
+yarn.lock
+package-lock.json
