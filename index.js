@@ -5,16 +5,16 @@ const express = require('express');
 const session = require('express-session');
 
 //Import Controllers
-const {add_user, login, logout} = require('./controllers/authentication');
+const {addUser, login, sendVerificationMail, verifyEmail, logout} = require('./controllers/authentication');
 
 //Import Constants
-const {NODE_ENV, PORT, LOG_DESTINATION, SESSION_SECRET, REDIS_HOST, REDIS_PORT} = require('./constants/environment');
+const {NODE_ENV, PORT, LOG_DESTINATION, SESSION_SECRET} = require('./constants/environment');
 
 //Import Middleware
-const {authentication_required, redirect_authenticated} = require('./middleware/authentication');
+const {authenticationRequired, redirectAuthenticated} = require('./middleware/authentication');
 
 //Redis Client Configuration
-const {getClient} = require('./database/redis-client');
+const {getClient} = require('./services/redis');
 const RedisStore = require('connect-redis')(session);
 
 
@@ -46,9 +46,24 @@ if (NODE_ENV === 'development') {
 
 
 
-app.post('/signup', (req, res) => add_user(req,res));
-app.post('/login', redirect_authenticated, (req, res)  => login(req,res));
+app.post('/signup', (req, res) => addUser(req,res));
+app.post('/login', redirectAuthenticated, (req, res)  => login(req,res));
 app.post('/logout', (req, res) => { logout(req,res); });
+app.get('/verify/:token', authenticationRequired,(req, res) => {verifyEmail(req,res);});
+app.post('/verify', authenticationRequired, (req, res) => {sendVerificationMail(req,res);});
+app.post('/isverified', authenticationRequired, (req, res) => {
+    if (req.session.user.verified){
+        return res.send({
+            status: SUCCESS,
+            description: 'Email verified'
+        });
+    }else{
+        return res.send({
+            status: FAILED,
+            error: 'Email not verified'
+        });
+    }
+});
 
 
 app.listen(PORT, () => {

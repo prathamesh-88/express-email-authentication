@@ -19,5 +19,12 @@ module.exports = {
     //Server port
     PORT        : process.env.PORT || 3000,
     //Session Secret
-    SESSION_SECRET: process.env.SESSION_SECRET
+    SESSION_SECRET: process.env.SESSION_SECRET,
+    //Email service configuration
+    EMAIL_SERVER: process.env.EMAIL_SERVER,
+    EMAIL_PORT: process.env.EMAIL_PORT || 587,
+    EMAIL_USER: process.env.EMAIL_USER,
+    EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+    //Other configuration
+    ORGANISATION_NAME: process.env.ORGANISATION_NAME ||process.env.EMAIL_USER,
 }
